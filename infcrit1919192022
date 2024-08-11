@@ -1,0 +1,70 @@
+local Players = game:GetService("Players")
+
+local function setupGui(player)
+    local playerGui = player:WaitForChild("PlayerGui")
+
+    local existingGui = playerGui:FindFirstChild("InfiniteLoopGui")
+    if existingGui then
+        existingGui:Destroy()
+    end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "InfiniteLoopGui"
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.Parent = playerGui
+
+    local usernameTextbox = Instance.new("TextBox")
+    usernameTextbox.Size = UDim2.new(0, 70, 0, 20)
+    usernameTextbox.Position = UDim2.new(0, 10, 0, 30)
+    usernameTextbox.PlaceholderText = "[Put ur username here.]"
+    usernameTextbox.TextScaled = true
+    usernameTextbox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    usernameTextbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    usernameTextbox.ZIndex = 3
+    usernameTextbox.Font = Enum.Font.Gotham
+    usernameTextbox.BorderSizePixel = 0
+    usernameTextbox.BackgroundTransparency = 0.5
+    usernameTextbox.Parent = screenGui
+
+    local enforceButton = Instance.new("TextButton")
+    enforceButton.Size = UDim2.new(0, 70, 0, 20)
+    enforceButton.Position = UDim2.new(0, 10, 0, 70)
+    enforceButton.Text = "[Set inf crit]"
+    enforceButton.TextScaled = true
+    enforceButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    enforceButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    enforceButton.ZIndex = 3
+    enforceButton.Font = Enum.Font.Gotham
+    enforceButton.BorderSizePixel = 0
+    enforceButton.BackgroundTransparency = 0.5
+    enforceButton.Parent = screenGui
+
+    local function enforceCriticalValue()
+        local username = usernameTextbox.Text
+        if username and username ~= "" then
+            local playerFolder = workspace:FindFirstChild(username)
+            if playerFolder then
+                local stats = playerFolder:FindFirstChild("Stats")
+                local critical = stats and stats:FindFirstChild("Critical")
+                if critical and critical:IsA("IntValue") then
+                    critical.Value = 9e18
+                    critical.Changed:Connect(function()
+                        critical.Value = 9e18
+                    end)
+                else
+                    warn("Critical property not found or is not an IntValue")
+                end
+            else
+                warn("Username not found in workspace")
+            end
+        else
+            warn("Username textbox is empty")
+        end
+    end
+
+    enforceButton.MouseButton1Click:Connect(enforceCriticalValue)
+end
+
+local player = Players.LocalPlayer
+setupGui(player)
